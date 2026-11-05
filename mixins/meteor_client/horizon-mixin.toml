@@ -1,0 +1,48 @@
+[mod]
+id = "meteor_client"
+version = "0.1.0"
+priority = 100
+
+[compatibility]
+horizon_revision = "ba6344a59cb9e755b730dcf02285fc0d33b97d3c"
+
+[[module]]
+id = "engine"
+file = "crates/horizon-client/src/game.rs"
+name = "meteor_client"
+source = "runtime.rs"
+
+[[module]]
+id = "adapter"
+file = "crates/horizon-client/src/game.rs"
+name = "meteor_client_adapter"
+source = "adapter.rs"
+
+[[injection]]
+id = "tick"
+kind = "HEAD"
+target = "horizon_client::game::Game<'_>::tick"
+helper = "tick.rs"
+bindings = [{ name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" }]
+
+[[injection]]
+id = "chat"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client::game::remote::Game<'_>::send_chat"
+helper = "chat.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "message", ty = "&str", value = "message" },
+]
+
+[[injection]]
+id = "command"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client::game::commands::Game<'_>::run_command"
+helper = "command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "command", ty = "&str", value = "command" },
+]
